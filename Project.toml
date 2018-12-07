@@ -1,0 +1,6 @@
+authors = ["Théo Galy-Fajou <theo.galyfajou@gmail.com>"]
+name = "GPExps"
+uuid = "56576990-fa5a-11e8-1e42-c19384a0daa2"
+version = "0.1.0"
+
+[deps]
