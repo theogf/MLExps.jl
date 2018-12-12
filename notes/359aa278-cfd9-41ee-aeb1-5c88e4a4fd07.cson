@@ -1,0 +1,54 @@
+createdAt: "2018-12-07T19:24:19.639Z"
+updatedAt: "2018-12-12T14:17:36.267Z"
+type: "MARKDOWN_NOTE"
+folder: "7cf5bf1951a47a87611d"
+title: "Experiment Framework"
+content: '''
+  # Experiment Framework
+  
+  ## Abstract representation of the process
+  
+  ### Input : 
+  - Collection of models
+    - Varying the type of model (OMGP vs GPFlow) => File to create the model, some `init.jl`
+    - Varying the parameters => Create a config file for all needed parameters `config.json`
+    - 
+  - Type of experiment
+    - What is done ? => Create a file that deal with the training `train.jl`
+    - What is collected ? => All results with labels
+      - Can be in form of metrics vs time or final results
+  - Data
+    - Same for all data
+    - Should be in the form of a path (eventually with )
+  - Workspace
+    - Allocate a new workspace containing the source files for every new project
+    - Containing 
+  
+  ### Process
+  - Preprocess the data
+    - Eventually normalize it => Generic
+    - Divide it into training/test / $k$-fold => Generic
+  - Initialize the models
+    - Need special care for each model => Dealt in `init.jl`
+  - Set training procedure 
+    - Training and callback function =>Dealt in `train.jl`
+    - Try to pass any collecting function as a callback function
+    - Make the target models as general as possible
+  - Correctly retransform collected data into the same format (Dataframes)
+  
+  ### Outputs
+  
+  - Dataframe  containing all the data, with labels of each column
+  - Store it in a new file everytime
+  
+  ## Full process
+  
+  Write a config file for the model, one for the experiment :arrow_right: 
+  
+  
+  ## Link of project :  [GitHub - theogf/GPExps.jl](https://github.com/theogf/GPExps.jl)
+  
+'''
+tags: []
+isStarred: false
+isTrashed: false

@@ -45,11 +45,27 @@ end
 
 function run_experiment(w::Workspace,config::ExpConfig;store::String="results")
     cd(w.dir)
-    θ = read_config(config)
+    θ = load_config(config)
     global models,data = init(w,θ)
     run!(w,θ,models,data)
-    process(w,θ,data)
+    process!(w,θ,data)
     save(w,θ,data)
+end
+
+function init(w::Workspace,θ::ExpParameters)
+
+end
+
+function run!(w::Workspace,θ::ExpParameters,models::Vector{Model},data::ExpData)
+
+end
+
+function process(w::Workspace,θ::ExpParameters,data::ExpData)
+
+end
+
+function save(w::Workspace,θ::ExpParameters,data::ExpData)
+
 end
 
 
@@ -67,14 +83,24 @@ end
 
 function plot_time_exp(w::Workspace,dir::String)
     results = Vector{DataFrame}()
+    max_col = 0
+    ps = Dict{Symbol,Plots.Plot}()
     for file in readdir(dir)
         push!(results,CSV.read(file))
-        results[end]
+        max_col = maximum(max_col,length(names(results[end]))-1)
+        for name in names(results[end])
+            ps[name] = plot()
+        end
     end
     for res in results
-
+        for name in names(results[end])
+            if name!=:time
+                ps[name] = plot!(ps[name],res[:time],res[name])
+            end
+        end
     end
 end
 
 function plot_end_exp(w::Workspace,dir::String)
+
 end
