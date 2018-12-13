@@ -1,5 +1,5 @@
 createdAt: "2018-12-07T19:24:19.639Z"
-updatedAt: "2018-12-12T14:17:36.267Z"
+updatedAt: "2018-12-13T16:35:36.814Z"
 type: "MARKDOWN_NOTE"
 folder: "7cf5bf1951a47a87611d"
 title: "Experiment Framework"
@@ -21,8 +21,9 @@ content: '''
     - Same for all data
     - Should be in the form of a path (eventually with )
   - Workspace
-    - Allocate a new workspace containing the source files for every new project
-    - Containing 
+    - :heavy_check_mark: Allocate a new workspace containing the source files for every new project
+    - :heavy_check_mark: Containing all files and src
+    - Create automatic template files
   
   ### Process
   - Preprocess the data
@@ -34,6 +35,7 @@ content: '''
     - Training and callback function =>Dealt in `train.jl`
     - Try to pass any collecting function as a callback function
     - Make the target models as general as possible
+    - Catch errors for training and keep training other methods!
   - Correctly retransform collected data into the same format (Dataframes)
   
   ### Outputs
@@ -43,7 +45,10 @@ content: '''
   
   ## Full process
   
-  Write a config file for the model, one for the experiment :arrow_right: 
+  - Write a template config file for the model
+  - Process the data just once (make a process for this)! And add a flag in the data to indicate it is processed and if it is already splitted into training/test
+  - Make copies of template config file and edit it
+  - Send config file to workspace and let the program run
   
   
   ## Link of project :  [GitHub - theogf/GPExps.jl](https://github.com/theogf/GPExps.jl)

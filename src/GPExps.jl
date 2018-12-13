@@ -7,6 +7,8 @@ using JSON
 using DataFrames
 using Plots
 using Interact, Blink
+using CSV, HDF5
+using Random
 
 include("workspace.jl")
 include("config.jl")

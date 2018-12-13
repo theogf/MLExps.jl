@@ -2,9 +2,12 @@
 Function to create and load config files
 """
 
+cd(dirname(@__FILE__))
+
 struct ExpConfig
     dir::String
     file::String
+    config::Dict
 end
 
 struct ExpParameters
@@ -27,12 +30,24 @@ Base.convert(s::String,e::ExpConfig) = ExpConfig(s)
 
 function load_config(config::ExpConfig)
     try
-        dict_params = JSON.parse(config.dir)
+        dict_params = JSON.parse(read(config.dir*"/"*config.file*".json",String))
+        return ExpConfig(config.dir,config.file,dict_params)
     catch e
         @error "Parsing failed, wrong directory or type of file"
     end
 end
 
+function write_config(w::Workspace,d::Dict,dir::String,name::String)
+    write_config(w,ExpConfig(dir,name,d))
+end
+
+
+function write_config(w::Workspace,config::ExpConfig)
+    isdir(config.dir) ? nothing : mkdir(config.dir)
+    open(config.dir*"/"*config.file*".json","w") do f
+        write(f,json(config.config))
+    end
+end
 
 function write_config_gui()
     w = Window();
@@ -130,11 +145,11 @@ function create_new_fieldbox(w::Window,fields_array::Vector{ParamField})
     return dom"div"("Format: new field,type: option1; option2;... or min;max",vbox(newfield,validate))
 end
 
-w = Window()
-columnbuttons = Observable{Any}(dom"div"())
-fields = Vector{ParamField}()
-a = create_new_fieldbox(w,fields)
-# on(x->begin add_new_field(newfield[]); update_window!(w,fields_array); end,validate)
-# body!(w,vbox(newfield,validate))
-body!(w,a)
-ASDA, Int: 1;3;2
+# w = Window()
+# columnbuttons = Observable{Any}(dom"div"())
+# fields = Vector{ParamField}()
+# a = create_new_fieldbox(w,fields)
+# # on(x->begin add_new_field(newfield[]); update_window!(w,fields_array); end,validate)
+# # body!(w,vbox(newfield,validate))
+# body!(w,a)
+# ASDA, Int: 1;3;2

@@ -1,5 +1,5 @@
 createdAt: "2018-12-13T13:24:58.941Z"
-updatedAt: "2018-12-13T13:34:26.546Z"
+updatedAt: "2018-12-13T15:12:57.750Z"
 type: "MARKDOWN_NOTE"
 folder: "7cf5bf1951a47a87611d"
 title: "Organisation Config File project"
@@ -12,22 +12,24 @@ content: '''
   ### - Creating a new field
   
   - Name field
-  - Type choice (multiple boxes, one choice possible)
-    - Add parameters given the choice:
+  - Type choice (multiple boxes, only one choice possible)
+    - Add parameters choices given the choice:
       - Bool : default value
       - Int : Range, default value
       - Float : Range, default value
-      - Dict : has two options
-        - Only one value is possible
-        - Multiple values are possible
+      - Dict : 
+        - Give all possible options (series of boolean basically)
+        - has two options
+          - Only one value is possible
+          - Multiple values are possible
       - String : default value
   ### - Editing fields
   - Leave all options free to change 
   
-  ### Remove fields
+  ### - Remove fields
   - Add a button next to the field
   
-  ### Saving
+  ### - Saving
   - Save in special template format
   
   ## Working with config files

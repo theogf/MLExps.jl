@@ -1,0 +1,51 @@
+
+
+function load_data(file::String)
+    f = h5open(file)
+    f["infos/preprocessed"] = true
+end
+
+function process_data(data::AbstractArray;normalize::Bool=false,shuffle::Bool=true)
+    if normalize
+        normalize_data!(data)
+    end
+    if shuffle
+        shuffle_data!(data)
+    end
+end
+
+function normalize_data!(data::AbstractArray)
+    zscore!(data)
+end
+
+function shuffle_data!(data::AbstractArray)
+    data = data[shuffle(1:length(data)),:]
+end
+
+function load_results(file::String)
+
+end
+
+
+function kfold(data::AbstractArray,nFold::Integer)
+    n = size(data,1)
+    n_sub = n÷nFold
+    s = shuffle(1:n)
+    i_train = Vector{Vector{Float64}}(undef,nFold)
+    i_test = Vector{Vector{Float64}}(undef,nFold)
+    i = 1
+    [x[round(Int64, (i-1)*s)+1:min(length(x),round(Int64, i*s))] for i=1:n]
+    while
+        i_train[i] = s[(i-1)*n_sub+1:min(n,i*nsub)]
+        i_test[i] = setdiff(s,i_train[i])
+    end
+    return i_train,i_test
+end
+
+function train_testsplit(data::AbstractArray,split::Float64)
+    n = size(data,1)
+    splitpoint = n÷split
+    i_train = 1:splitpoint
+    i_test = splitpoint+1:n
+    return i_train, i_test
+end
