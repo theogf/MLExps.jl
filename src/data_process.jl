@@ -23,7 +23,7 @@ function shuffle_data!(data::AbstractArray)
 end
 
 function load_results(file::String)
-
+    CSV.read(file)
 end
 
 
