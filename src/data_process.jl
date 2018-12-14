@@ -2,7 +2,24 @@
 
 function load_data(file::String)
     f = h5open(file)
-    f["infos/preprocessed"] = true
+    preprocess = f["infos/preprocessed"]
+    shuffled = f["infos/shuffled"]
+    traintestplit = f["infos/traintestsplit"]
+    Xysplit = f["infos/Xysplit"]
+    println("Loading "*(preprocessed ? "processed" : "")*" data from file $file")
+    if traintestsplit
+        if Xysplit
+            return f["data/X_train"],f["data/y_train"],f["data/X_test"],f["data/y_test"]
+        else
+            return f["data/train"],f["data/test"]
+        end
+    else
+        if Xysplit
+            return f["data/X"],f["data/y"]
+        else
+            return f["data/data"]
+        end
+    end
 end
 
 function process_data(data::AbstractArray;normalize::Bool=false,shuffle::Bool=true)
