@@ -1,23 +1,20 @@
-include("config.jl")
-using JSON
-
-
 struct Workspace
     dir::String
     name::String
-end
-
-struct Model
-
+    init::String
 end
 
 
-struct ExpData
-
+mutable struct ExpData
+    data::Vector{DataFrames}
+    function ExpData()
+        return ExpData(Vector{DataFrames}())
+    end
 end
 
 function create_workspace(dir::String,name::String)
     #TODO Need to convert dir into a relative path to $HOME
+    init = pwd()
     if !isdir(dir)
         try
             mkdir(dir)
@@ -27,48 +24,32 @@ function create_workspace(dir::String,name::String)
             open("$(name).md","w") do file
                 write(file,"# $name Workspace readme file\n")
             end
-            mkdir("src")
-            mkdir("results")
-            mkdir("config")
         catch
             @error "$dir is not valid, please reenter a valid directory"
         end
-    else
-        @warn "Directory already existing, adapting to the new space?"
-        cd(dir)
-        !isfile("init.jl") ? open("init.jl","w") : nothing
-        !isfile("train.jl") ? open("train.jl","w") : nothing
-        open("$(name).md","w") do file
-            write(file,"# $name Workspace readme file\n")
-        end
-        !isdir("src") ? mkdir("src") : nothing
-        !isdir("results") ? mkdir("results") : nothing
-        !isdir("config") ?  mkdir("config") : nothing
     end
     println("Workspace $name was created in directory $dir with files `init.jl` and `train.jl`")
-    return Workspace(dir,name)
+    return Workspace(dir,name,init)
 end
 
 
 function load_workspace(dir::String)
+    init = pwd()
     try
         cd(dir)
-        name=""
         for file in readdir()
-            println(file)
             if file[end-1:end] == "md"
                 name = file[1:end-3]
             end
         end
-        if name==""
+        if !@isdefined(name)
             @error "No md file was found"
         end
         include("init.jl")
         include("train.jl")
-        return Workspace(dir,name)
-    catch
+        Workspace(dir,name,init)
+    else
         @error "$dir is not a valid workspace directory"
-        cd("..")
     end
 end
 
@@ -76,28 +57,22 @@ end
 function run_experiment(w::Workspace,config::ExpConfig;store::String="results")
     cd(w.dir)
     θ = load_config(config)
-    global models,data = init(w,θ)
+    global models,data = init(w,θ) #COming from "init.jl"
     run!(w,θ,models,data)
     process!(w,θ,data)
-    save(w,θ,data)
+    save(w,θ,data,store)
 end
 
-function init(w::Workspace,θ::ExpConfig)
 
+function run!(w::Workspace,θ::ExpConfig,models::Dict{String,Model},data::ExpData)
+    for (model_name,model) in models
+        run_model(model,model_name,θ) #Coming from "run.jl"
+    end
 end
 
-function run!(w::Workspace,θ::ExpConfig,models::Vector{Model},data::ExpData)
+function save(w::Workspace,θ::ExpConfig,data::ExpData,store::String)
 
 end
-
-function process(w::Workspace,θ::ExpConfig,data::ExpData)
-
-end
-
-function save(w::Workspace,θ::ExpConfig,data::ExpData)
-
-end
-
 
 function plot_results(w::Workspace)
     cd(w.dir); cd("results");
@@ -109,31 +84,19 @@ function plot_results(w::Workspace)
     a = read(stdin,Integer)
     cd(folders[a])
     plot_time_exp(".")
+    cd(w.dir)
 end
 
 function plot_time_exp(w::Workspace,dir::String)
     results = Vector{DataFrame}()
-    max_col = 0
-    ps = Dict{Symbol,Plots.Plot}()
     for file in readdir(dir)
         push!(results,CSV.read(file))
-        max_col = maximum(max_col,length(names(results[end]))-1)
-        for name in names(results[end])
-            ps[name] = plot()
-        end
+        results[end]
     end
     for res in results
-        for name in names(results[end])
-            if name!=:time
-                ps[name] = plot!(ps[name],res[:time],res[name])
-            end
-        end
+
     end
 end
 
 function plot_end_exp(w::Workspace,dir::String)
-
 end
-
-
-work = create_workspace("test_work","Test")
