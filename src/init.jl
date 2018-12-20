@@ -10,3 +10,13 @@ function init(w::Workspace, θ::ExpConfig)
     ### Create the models given the parameters in θ here and add them to models
     return models,ExpData()
 end
+
+
+"""Make every model type inherit from Model"""
+abstract type myAbstractModel <: Model end
+
+"""And construct custom wrappers for your actual models inside"""
+mutable struct myCustomModel <: myAbstractModel
+    field1::Any
+    field2::Any
+end

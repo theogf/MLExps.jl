@@ -4,23 +4,6 @@ Function to create and load config files
 
 cd(dirname(@__FILE__))
 
-struct ExpConfig
-    dir::String
-    file::String
-    config::Dict
-end
-
-struct ExpParameters
-    name::String
-    val::Dict{Symbol,Any}
-end
-
-struct ParamField
-    name::String
-    fieldtype::DataType
-    options::Any
-end
-
 function Base.show(io::IO,param::ExpParameters)
     println("ExpParameters object, $(param.name) with parameters $(param.val)")
 end

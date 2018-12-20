@@ -52,8 +52,7 @@ function kfold(data::AbstractArray,nFold::Integer)
     i_train = Vector{Vector{Float64}}(undef,nFold)
     i_test = Vector{Vector{Float64}}(undef,nFold)
     i = 1
-    [x[round(Int64, (i-1)*s)+1:min(length(x),round(Int64, i*s))] for i=1:n]
-    while
+    for i=1:n
         i_train[i] = s[(i-1)*n_sub+1:min(n,i*nsub)]
         i_test[i] = setdiff(s,i_train[i])
     end

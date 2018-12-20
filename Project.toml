@@ -1,6 +1,6 @@
 name = "MLExps"
-uuid = "56576990-fa5a-11e8-1e42-c19384a0daa2"
-authors = ["Théo Galy-Fajou <theo.galyfajou@gmail.com>"]
+uuid = "72014262-0471-11e9-1db3-8bda01624509"
+authors = ["Theo GF <theo.galyfajou@gmail.com>"]
 version = "0.1.0"
 
 [deps]

@@ -1,25 +1,4 @@
-struct Workspace
-    dir::String
-    name::String
-    init::String
-end
-
-
-mutable struct ExpData
-    data::Vector{DataFrames}
-    function ExpData()
-        return ExpData(Vector{DataFrame}())
-    end
-end
-
-mutable struct Results
-    data::Dict{Any,DataFrames}
-    function ExpResults()
-        return ExpResults(Dict{Any,DataFrame}())
-    end
-end
-abstract type Model;
-
+""" Create a workspace with appropriate template files"""
 function create_workspace(dir::String,name::String)
     #TODO Need to convert dir into a relative path to $HOME
     init = pwd()
@@ -29,53 +8,56 @@ function create_workspace(dir::String,name::String)
             cd(dir)
             open("init.jl","w")
             open("train.jl","w")
-            open("$(name).md","w") do file
-                write(file,"# $name Workspace readme file\n")
+            open(".workspace","w") do file
+                write(file,json(Dict("workspace_name"=>name)))
             end
-        catch
-            @error "$dir is not valid, please reenter a valid directory"
+            open("README.md","w") do file
+                write(file,"# Workspace for experiments $name")
+            end
+            mkdir("config"); cd("config")
+            open("template_config.json","w") do file
+                write(file,json(Dict("random_seed"=>rand(1:typemax(Int)))))
+            end
+            cd(dir)
+        catch e
+            @error "$dir is not valid, please reenter a valid directory : $e"
         end
     end
-    println("Workspace $name was created in directory $dir with files `init.jl` and `train.jl`")
+    println("Workspace $name was created in directory $dir\n You need now to configure `init.jl` and `train.jl` and the `template_config.json` file given your needs")
     return Workspace(dir,name,init)
 end
 
-
+"""Load the workspace in the given directory"""
 function load_workspace(dir::String)
     init = pwd()
     try
         cd(dir)
-        for file in readdir()
-            if file[end-1:end] == "md"
-                name = file[1:end-3]
-            end
-        end
-        if !@isdefined(name)
-            @error "No md file was found"
-        end
+        wparams = JSON.parse(read(".workspace",String))
         include("init.jl")
         include("train.jl")
-        Workspace(dir,name,init)
-    else
+        Workspace(dir,wparams["workspace_name"],init)
+    catch e
         @error "$dir is not a valid workspace directory"
     end
 end
 
-
+"""Main function to be called to apply a config file on a workspace"""
 function run_experiment(w::Workspace,config::ExpConfig;store::String="results")
     cd(w.dir)
     θ = load_config(config)
+    Random.seed!(θ.params["random_seed"])
     global models,data = init(w,θ) #Coming from "init.jl"
     results = run!(w,θ,models,data)
     process!(w,θ,results)
     write_results(w,θ,results,store)
 end
 
-
+"""Run all models with data and parameters"""
 function run!(w::Workspace,θ::ExpConfig,models::Dict{String,Model},data::ExpData)# Run each model given the data
+    results = ExpResults()
     for (model_name,model) in models
         try
-            run_model(model,model_name,θ,data) #Coming from "run.jl"
+            run_model(model,model_name,θ,data,results) #Coming from "run.jl"
         catch e #Catch failure from model and
             @warn "Received error $e \n Run on model $model_name failed!"
         end
@@ -88,7 +70,7 @@ function write_results(w::Workspace,θ::ExpConfig,results::ExpResults,store::Str
     folders = readdir()
     i = 1
     while in(name*"_$i",folders)
-        i++
+        i+=1
     end
     mkdir(name*"_$i"); cd(name*"_$i")
     for (name,res) in results.data
