@@ -12,6 +12,8 @@ mutable struct ExpData
     end
 end
 
+abstract type Model;
+
 function create_workspace(dir::String,name::String)
     #TODO Need to convert dir into a relative path to $HOME
     init = pwd()
@@ -66,11 +68,17 @@ end
 
 function run!(w::Workspace,θ::ExpConfig,models::Dict{String,Model},data::ExpData)
     for (model_name,model) in models
-        run_model(model,model_name,θ) #Coming from "run.jl"
+        try
+            run_model(model,model_name,θ,data) #Coming from "run.jl"
+        catch e #Catch failure from model and
+            @warn "Received error $e \n Run on model $model_name failed!"
+        end
     end
 end
 
 function save(w::Workspace,θ::ExpConfig,data::ExpData,store::String)
+    cd(w.dir)
+    cd(store)
 
 end
 
@@ -89,12 +97,24 @@ end
 
 function plot_time_exp(w::Workspace,dir::String)
     results = Vector{DataFrame}()
+    all_names = Vector{Symbol}()
+    field_plots = Dictionary{Symbol,Plot}()
     for file in readdir(dir)
         push!(results,CSV.read(file))
-        results[end]
+        for n in names(results[end])
+            if !in(n,all_names)
+                push!(all_names,n)
+                field_plots[n] = plot()
+            end
+        end
     end
     for res in results
-
+        t = res[:time]
+        for field in names(res)
+            if field != :time
+                plot!(field_plots[field],t,res[field],yaxis=:log,xlabel="Time [s] (logscale)",ylabel=String(a))
+            end
+        end
     end
 end
 

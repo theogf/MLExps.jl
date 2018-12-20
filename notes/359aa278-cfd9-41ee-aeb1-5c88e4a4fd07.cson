@@ -1,5 +1,5 @@
 createdAt: "2018-12-07T19:24:19.639Z"
-updatedAt: "2018-12-13T16:35:36.814Z"
+updatedAt: "2018-12-18T12:50:17.846Z"
 type: "MARKDOWN_NOTE"
 folder: "7cf5bf1951a47a87611d"
 title: "Experiment Framework"
@@ -11,15 +11,19 @@ content: '''
   ### Input : 
   - Collection of models
     - Varying the type of model (OMGP vs GPFlow) => File to create the model, some `init.jl`
+      - Need a clearer definition of the model type (modele object and model name?)
     - Varying the parameters => Create a config file for all needed parameters `config.json`
-    - 
+  
   - Type of experiment
     - What is done ? => Create a file that deal with the training `train.jl`
+      - Takes a model and a collection of parameters
     - What is collected ? => All results with labels
       - Can be in form of metrics vs time or final results
   - Data
     - Same for all data
-    - Should be in the form of a path (eventually with )
+    - Should be in the form of a path
+      - Stored in a HDF5 format
+      - Allow a preprocessing toolbox to presplit and process the data and store it this way
   - Workspace
     - :heavy_check_mark: Allocate a new workspace containing the source files for every new project
     - :heavy_check_mark: Containing all files and src

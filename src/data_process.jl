@@ -1,5 +1,6 @@
 
-
+""" Load worked on data from a HDF5 file on `file` path, file should have a section `infos` informing about the status of the data
+and a section `data` where data is either splitted in X,y and/or and test/train"""
 function load_data(file::String)
     f = h5open(file)
     preprocess = f["infos/preprocessed"]
