@@ -10,15 +10,15 @@ function load_data(file::String)
     println("Loading "*(preprocessed ? "processed" : "")*" data from file $file")
     if traintestsplit
         if Xysplit
-            return f["data/X_train"],f["data/y_train"],f["data/X_test"],f["data/y_test"]
+            return X_Y_Train_Test(f["data/X_train"],f["data/y_train"],f["data/X_test"],f["data/y_test"])
         else
-            return f["data/train"],f["data/test"]
+            return Train_Test(f["data/train"],f["data/test"])
         end
     else
         if Xysplit
-            return f["data/X"],f["data/y"]
+            return X_Y(f["data/X"],f["data/y"])
         else
-            return f["data/data"]
+            return Data(f["data/data"])
         end
     end
 end

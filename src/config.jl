@@ -4,11 +4,6 @@ Function to create and load config files
 
 cd(dirname(@__FILE__))
 
-function Base.show(io::IO,param::ExpParameters)
-    println("ExpParameters object, $(param.name) with parameters $(param.val)")
-end
-
-
 Base.convert(s::String,e::ExpConfig) = ExpConfig(s)
 
 function load_config(config::ExpConfig)
@@ -38,17 +33,13 @@ function write_config_gui()
     widgetlist = Vector{Widget}()
     handle(w,"add") do args
         add_new_field(widgetlist,args)
-        update_win(w,widgetlist)
+        update_window(w,widgetlist)
     end
 end
 
 function set_config_gui()
 
 end
-
-# function create_new_field()
-using Blink,Interact
-
 
 function update_window!(w::Window,fields::Vector{ParamField})
     new_field_box = create_new_fieldbox()
@@ -122,12 +113,70 @@ function write_template_config()
 end
 
 function create_new_fieldbox(w::Window,fields_array::Vector{ParamField})
-    newfield = textbox("Format: new field,type: option1; option2;... or min;max")
-    validate = button("Add new field")
-    on(x->begin add_new_field(newfield[]); update_window!(w,fields_array); end,validate)
-    return dom"div"("Format: new field,type: option1; option2;... or min;max",vbox(newfield,validate))
+    hinttext = Observable{Any}(dom"div"("Choose a type for your new field:"))
+    typechoice = tabulator(OrderedDict("Bool"=>bool_fields(fields_array),"Int"=>int_fields(fields_array),"Float"=>float_fields(fields_array),"String"=>string_fields(fields_array),"Dict"=>dict_fields(fields_array),"Radio"=>radio_fields(fields_array)))
+    # update_window!(w,fields_array)
+    return vbox(hinttext,typechoice,dom"div"("UCHACKA"))
 end
 
+function bool_fields(fields_array::Vector{ParamField})
+    hinttext = dom"div"("Give a name and the default value of the field")
+    fieldname = textbox("",label="Field Name")
+    default  = checkbox(true,label="Default value is true")
+    valid_button = button("Add new boolean field")
+    on(x->add_bool(fieldname[],default[],fields_array),valid_button)
+    return vbox(hinttext,fieldname,default,valid_button)
+end
+
+function add_bool(name::String,default::Bool,fields_array::Vector{ParamField})
+    push!(fields_array,ParamField{Bool}(name,default,nothing))
+end
+
+function int_fields(fields_array::Vector{ParamField})
+    hinttext = dom"div"("Give a name, the default value and the limits (leave blank for Inf) of the field")
+    fieldname = textbox("",label="Field Name")
+    default = spinbox(0,label="Default value")
+    lim_min = spinbox(-Inf,label="Minimum value")
+    lim_max = spinbox(Inf,label="Maximum value")
+    valid_button = button("Add new integer field")
+    on(x->add_int(fieldname[],default[],lim_min[],lim_max[],fields_array),valid_button)
+    return vbox(hinttext,fieldname,default,lim_min,lim_max,valid_button)
+end
+
+function add_int(name::String,default::Real,lim_min::Real,lim_max::Real,fields_array::Vector{ParamField})
+    push!(fields_array,ParamField{Int64}(name,floor(Int64,default),[floor(Int64,lim_min),ceil(Int64,lim_max)]))
+end
+function float_fields(fields_array::Vector{ParamField})
+    hinttext = dom"div"("Give a name, the default value and the limits (leave blank for Inf) of the field")
+    fieldname = textbox("",label="Field Name")
+    default = spinbox(0.0,label="Default value")
+    lim_min = spinbox(-Inf,label="Minimum value")
+    lim_max = spinbox(Inf,label="Maximum value")
+    valid_button = button("Add new float field")
+    on(x->add_float(fieldname[],default[],lim_min[],lim_max[],fields_array),valid_button)
+    return vbox(hinttext,fieldname,default,lim_min,lim_max,valid_button)
+end
+
+function add_float(name::String,default::Real,lim_min::Real,lim_max::Real,fields_array::Vector{ParamField})
+    push!(fields_array,ParamField{Float64}(name,Float64(default),[Float64(lim_min),Float64(lim_max)]))
+end
+
+function string_fields(fields_array::Vector{ParamField})
+    hinttext = dom"div"("Give a name and the default value of the field")
+    fieldname = textbox("",label="Field Name")
+    default  = textbox("",label="Default value")
+    valid_button = button("Add new string field")
+    on(x->add_bool(fieldname[],default[],fields_array),valid_button)
+    return vbox(hinttext,fieldname,default,valid_button)
+end
+
+function dict_fields(fields_array::Vector{ParamField})
+
+end
+
+function radio_fields(fields_array::Vector{ParamField})
+
+end
 # w = Window()
 # columnbuttons = Observable{Any}(dom"div"())
 # fields = Vector{ParamField}()
