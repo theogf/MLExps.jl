@@ -1,6 +1,6 @@
-# GPExps.jl
+# MLExps.jl
 
-An all purpose package to run Gaussian Process Experiments, using config files
+An all purpose package to run Machine Learning Experiments, using config files
 Each project has a defined workspace, with a `init.jl` file containing.
 
 - `create_workspace(dir)` create a workspace in the given directory

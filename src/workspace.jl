@@ -8,10 +8,16 @@ end
 mutable struct ExpData
     data::Vector{DataFrames}
     function ExpData()
-        return ExpData(Vector{DataFrames}())
+        return ExpData(Vector{DataFrame}())
     end
 end
 
+mutable struct Results
+    data::Dict{Any,DataFrames}
+    function ExpResults()
+        return ExpResults(Dict{Any,DataFrame}())
+    end
+end
 abstract type Model;
 
 function create_workspace(dir::String,name::String)
@@ -59,14 +65,14 @@ end
 function run_experiment(w::Workspace,config::ExpConfig;store::String="results")
     cd(w.dir)
     θ = load_config(config)
-    global models,data = init(w,θ) #COming from "init.jl"
-    run!(w,θ,models,data)
-    process!(w,θ,data)
-    save(w,θ,data,store)
+    global models,data = init(w,θ) #Coming from "init.jl"
+    results = run!(w,θ,models,data)
+    process!(w,θ,results)
+    write_results(w,θ,results,store)
 end
 
 
-function run!(w::Workspace,θ::ExpConfig,models::Dict{String,Model},data::ExpData)
+function run!(w::Workspace,θ::ExpConfig,models::Dict{String,Model},data::ExpData)# Run each model given the data
     for (model_name,model) in models
         try
             run_model(model,model_name,θ,data) #Coming from "run.jl"
@@ -76,10 +82,18 @@ function run!(w::Workspace,θ::ExpConfig,models::Dict{String,Model},data::ExpDat
     end
 end
 
-function save(w::Workspace,θ::ExpConfig,data::ExpData,store::String)
-    cd(w.dir)
-    cd(store)
-
+function write_results(w::Workspace,θ::ExpConfig,results::ExpResults,store::String)
+    cd(w.dir);cd(store);
+    name = get_exp_name(θ)
+    folders = readdir()
+    i = 1
+    while in(name*"_$i",folders)
+        i++
+    end
+    mkdir(name*"_$i"); cd(name*"_$i")
+    for (name,res) in results.data
+        CSV.write(name*".csv",res)
+    end
 end
 
 function plot_results(w::Workspace)
