@@ -112,11 +112,11 @@ end
 function write_template_config()
 end
 
-function create_new_fieldbox(w::Window,fields_array::Vector{ParamField})
+function create_new_fieldbox(fields_array::Vector{ParamField})
     hinttext = Observable{Any}(dom"div"("Choose a type for your new field:"))
     typechoice = tabulator(OrderedDict("Bool"=>bool_fields(fields_array),"Int"=>int_fields(fields_array),"Float"=>float_fields(fields_array),"String"=>string_fields(fields_array),"Dict"=>dict_fields(fields_array),"Radio"=>radio_fields(fields_array)))
     # update_window!(w,fields_array)
-    return vbox(hinttext,typechoice,dom"div"("UCHACKA"))
+    return vbox(hinttext,typechoice,dom"div"("Preput fields"))
 end
 
 function bool_fields(fields_array::Vector{ParamField})
@@ -171,8 +171,26 @@ function string_fields(fields_array::Vector{ParamField})
 end
 
 function dict_fields(fields_array::Vector{ParamField})
-
+    hinttext = dom"div"("Give a name, the options and the default state of the field")
+    options = Vector{String}()
+    fieldname = textbox("",label="Field Name")
+    new_option = textbox("",label="New option")
+    add_option = button(content="Add option")
+    default  = show_dict_options(options)
+    on(x->begin push!(options,new_option[]); default=show_dict_options(options);end,add_option)
+    valid_button = button("Add new dict field")
+    on(x->add_dict(fieldname[],default[],fields_array),valid_button)
+    return vbox(hinttext,fieldname,hbox(new_option,add_option),default,valid_button)
 end
+
+function show_dict_options(options::Vector{String})
+    return checkboxes(Dict([opt=>false for opt in options]),label="Default State")
+end
+
+function add_dict(name::String,default::Any,fields_array::Vector{ParamField})
+    push!(fields_array,ParamField{Dict}(name,values(default),keys(default)))
+end
+
 
 function radio_fields(fields_array::Vector{ParamField})
 
