@@ -180,13 +180,19 @@ function dict_fields(fields_array::Vector{ParamField})
 end
 
 function radio_fields(fields_array::Vector{ParamField})
-
+    hinttext = dom"div"("Give a name and the default value of the field")
+    fieldname = textbox("",label="Field Name")
+    default  = textbox("",label="Default value")
+    valid_button = button("Add new string field")
+    on(x->add_bool(fieldname[],default[],fields_array),valid_button)
+    return vbox(hinttext,fieldname,default,valid_button)
 end
-# w = Window()
-# columnbuttons = Observable{Any}(dom"div"())
-# fields = Vector{ParamField}()
-# a = create_new_fieldbox(w,fields)
-# # on(x->begin add_new_field(newfield[]); update_window!(w,fields_array); end,validate)
-# # body!(w,vbox(newfield,validate))
-# body!(w,a)
+
+w = Window()
+columnbuttons = Observable{Any}(dom"div"())
+fields = Vector{ParamField}()
+a = create_new_fieldbox(w,fields)
+# on(x->begin add_new_field(newfield[]); update_window!(w,fields_array); end,validate)
+# body!(w,vbox(newfield,validate))
+body!(w,a)
 # ASDA, Int: 1;3;2

@@ -11,6 +11,9 @@ using CSV, HDF5
 using Random
 import Base.convert, Base.show
 
+export Workspace, ExpConfig
+export write_config, load_config
+
 include("types.jl")
 include("workspace.jl")
 include("config.jl")
