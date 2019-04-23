@@ -4,6 +4,7 @@
 module MLExps
 
 using JSON
+using DrWatson
 using DataFrames
 using Plots
 using Interact, Blink
@@ -11,15 +12,10 @@ using CSV, HDF5
 using Random
 import Base.convert, Base.show
 
-export Workspace, ExpConfig
-export write_config, load_config
-export create_template_config, gui_config_file
+export create_template_config, edit_template_config, gui_config_file
 
 include("types.jl")
-include("workspace.jl")
-include("config.jl")
-include("gui_config.jl")
-include("data_process.jl")
-include("results_process.jl")
-
+include("fields_gui.jl")
+include("config_gui.jl")
+include("template_gui.jl")
 end # module
