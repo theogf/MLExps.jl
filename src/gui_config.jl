@@ -85,7 +85,7 @@ function open_template_file(fields_placeholder::Observable,filepath::String="")
     field_boxes = create_box.(fields)
     savefile = savedialog()
     savebutton = button("Save config file")
-    on(_->write_config(fields,field_boxes,savefile),savebutton)
+    on(_->write_config(fields,field_boxes,savefile[]),savebutton)
     fields_placeholder[] = dom"div"(vbox(field_boxes...,savefile,savebutton))
 end
 
