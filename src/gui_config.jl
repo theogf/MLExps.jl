@@ -51,7 +51,7 @@ end
 
 function template_fieldbox(fields::Vector{ParamField})
     list = Observable{Any}(dom"div"())
-    title = dom"div.title"("Config file creator")
+    title = dom"div.title"("Template config file creator")
     hinttext = dom"div.subtitle"("Choose a type for your new field:")
     sep1 = Interact.hline()
     typechoice = tabulator(OrderedDict("Bool"=>bool_fields(fields,list),"Int"=>int_fields(fields,list),"Float"=>float_fields(fields,list),"String"=>string_fields(fields),"Dict"=>dict_fields(fields),"Radio"=>radio_fields(fields)))
